@@ -1,0 +1,12 @@
+.venv/
+# Python cache files
+__pycache__/
+har_and_cookies/
+# PyInstaller
+build/
+dist/
+assistrpg.spec
+# Generated files
+chat.csv
+dice.csv
+persons.csv
