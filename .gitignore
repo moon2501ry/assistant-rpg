@@ -2,6 +2,8 @@
 # Python cache files
 __pycache__/
 har_and_cookies/
+# Assets
+assets/
 # PyInstaller
 build/
 dist/
@@ -10,3 +12,4 @@ assistrpg.spec
 chat.csv
 dice.csv
 persons.csv
+configs.txt

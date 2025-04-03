@@ -2,6 +2,7 @@ import random as rnd
 import csv
 import os
 from assistant_ai import AssistAI
+from config import ConfigTXT
 from persons import PersonRPG
 
 def get_param(command:str):
@@ -17,6 +18,7 @@ def save_dice(seed, result):
     with open("dice.csv", "a", newline='') as file:
         csv.writer(file).writerow([f"Resultado: {result}", f"Seed: {seed}"]);
 
+config = ConfigTXT({"API-KEY":"str,none"});
 assistant = AssistAI("Você será um assistente para RPGs");
 while True:
     os.system('cls' if os.name == 'nt' else 'clear');
@@ -27,11 +29,19 @@ while True:
             print("Resposta:", assistant.response(get_param(_input)));
         case "setperson":
             person = PersonRPG(_input.split()[1]);
-            person_ai = AssistAI(f"Imite esse personagem de RPG: {person.list()}", False);
+            if config.get("API-KEY") == "none":
+                person_ai = AssistAI(f"Imite esse personagem de RPG: {person.list()}", False);
+            if config.get("API-KEY") != "none":
+                person_ai = AssistAI(f"Imite esse personagem de RPG: {person.list()}", False, api_key=config.get("API-KEY"));
             print(person.list());
         case "person":
             try:
-                print(f"{person.name}:", person_ai.response(get_param(_input)));
+                if config.get("API-KEY") == "none":
+                    print(f"{person.name}:", person_ai.response(get_param(_input)));
+                if config.get("API-KEY") != "none":
+                    response = person_ai.response(get_param(_input));
+                    person_ai.text_to_speech(person.voice, response);
+                    print(f"{person.name}:", response);
             except:
                 os.system('cls' if os.name == 'nt' else 'clear');
                 print("Nenhum personagem selecionado!");
@@ -45,7 +55,10 @@ while True:
             dice_print = "";
             dice_result = 0;
             for i in dice_roll:
-                dice_print += f"{i},";
+                if i == dice_roll[len(dice_roll)-1]:
+                    dice_print += f"{i} ";
+                else:
+                    dice_print += f"{i},";
                 dice_result += i;
             dice_print += f"| [{dice_result}] foi o resultado!";
             save_dice(seed, dice_result);
