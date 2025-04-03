@@ -14,7 +14,7 @@ Are you *having* a *hard* time **mastering RPGs**?!
 ### **!!DOWNLOAD NOW!!**
 *Click* [**HERE**](https://github.com/moon2501ry/rpg-assist-ai/releases) ***now***!! To **have** these *difficulties* **eliminated**!!
 ### CONTACT
-[![Email](https://img.shields.io/badge/Report_Error-fb8b6b?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ryanamorimcontato@email.com?subject=AssistAI%20-%20Report%20Error/Bug)
+[![Email](https://img.shields.io/badge/Report_Error-fb8b6b?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ryanamorimcontato@email.com?subject=AssistRPG%20-%20Report%20Error/Bug)
 ### VIEW MY PROFILE AND OTHERS PROJECTS
 [![GitHub Profile](https://img.shields.io/badge/GitHub-My_Profile-blue?style=for-the-badge&logo=github)](https://github.com/moon2501ry)
 [![Itch.io Profile](https://img.shields.io/badge/Itch.io-My_Profile-fa5c5c?style=for-the-badge&logo=itch.io&logoColor=white)](https://moon2501.itch.io/)
