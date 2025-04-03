@@ -1,4 +1,6 @@
+import pygame
 import random as rnd
+import subprocess
 import csv
 import os
 from assistant_ai import AssistAI
@@ -17,8 +19,17 @@ def get_param(command:str):
 def save_dice(seed, result):
     with open("dice.csv", "a", newline='') as file:
         csv.writer(file).writerow([f"Resultado: {result}", f"Seed: {seed}"]);
+def play_audio(audio:str|None="audio.mp3"):
+    try:
+        subprocess.run([config.get('DIR-SOUNDPAD'), '-rc', 'DoPlaySound(1)']);
+    except:
+        pygame.mixer.music.unload();
+        pygame.mixer.music.load(audio);
+        pygame.mixer.music.play();
 
-config = ConfigTXT({"API-KEY":"str,none"});
+pygame.mixer.init();
+
+config = ConfigTXT({"API-KEY":"str,none", "DIR-SOUNDPAD":"str,none"});
 assistant = AssistAI("Você será um assistente para RPGs");
 while True:
     os.system('cls' if os.name == 'nt' else 'clear');
@@ -41,6 +52,8 @@ while True:
                 if config.get("API-KEY") != "none":
                     response = person_ai.response(get_param(_input));
                     person_ai.text_to_speech(person.voice, response);
+                    person_ai.save_audio();
+                    play_audio();
                     print(f"{person.name}:", response);
             except:
                 os.system('cls' if os.name == 'nt' else 'clear');

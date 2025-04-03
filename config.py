@@ -22,7 +22,7 @@ class ConfigTXT:
                                 self.params[i] = get_split(list.get(i).split(",")[0]);
                 break;
             except:
-                with open("config.txt", "w") as config:
+                with open(file, "w") as config:
                     for i in list:
                         config.write(f"{i}={list.get(i).split(",")[1]},\n");
 
