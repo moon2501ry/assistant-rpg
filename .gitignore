@@ -1,3 +1,4 @@
+# Venv
 .venv/
 # Python cache files
 __pycache__/
@@ -15,3 +16,4 @@ chat.csv
 dice.csv
 persons.csv
 configs.txt
+audio.mp3
