@@ -1,7 +1,12 @@
 import csv
+from language import LangINI
 
 class PersonRPG:
-    def __init__(self, name_or_id):
+    def __init__(self, name_or_id, lang:str|None=None):
+        if lang is None:
+            self.lang = LangINI();
+        else:
+            self.lang = LangINI(lang);
         def open_file():
             with open("persons.csv", 'r', encoding="utf-8", newline='') as file:
                 for i in csv.reader(file, delimiter='|'):
@@ -16,15 +21,15 @@ class PersonRPG:
             open_file();
         except:
             with open("persons.csv", 'w', encoding="utf-8", newline='') as file:
-                csv.writer(file, delimiter='|').writerow(["ID","Name","Lore","Character","Age","Gender","VoiceID"]);
-                csv.writer(file, delimiter='|').writerow([0,"Teste","Personagem de teste","Sem Personalidade",25,"Masculino","t0e1s2t3e"]);
+                csv.writer(file, delimiter='|').writerow(["ID",self.lang.ini.get("Person","Name"),"Lore",self.lang.ini.get("Person","Character"),self.lang.ini.get("Person","Age"),self.lang.ini.get("Person","Gender"),"VoiceID"]);
+                csv.writer(file, delimiter='|').writerow([0,self.lang.ini.get("PersonTemplate","Name"),self.lang.ini.get("PersonTemplate","Lore"),self.lang.ini.get("PersonTemplate","Character"),25,self.lang.ini.get("PersonTemplate","Gender"),"t0e1s2t3e"]);
             while True:
-                if input("Edit 'persons.csv' template, please.\nHave you edited it yet? | y or n>") == "y":
+                if input(self.lang.ini.get("Person","EditCsv").format("\n")) == self.lang.ini.get("Person","Yes"):
                     break;
             open_file();
 
     def list(self):
-        return f"Nome: {self.name}; Lore: {self.lore}; Características: {self.character}; Idade: {self.age}; Gender: {self.gender}";
+        return f"{self.lang.ini.get("Person","Name")}: {self.name}; Lore: {self.lore}; {self.lang.ini.get("Person","Character")}: {self.character}; {self.lang.ini.get("Person","Age")}: {self.age}; {self.lang.ini.get("Person","Gender")}: {self.gender}";
 
 if __name__ == "__main__":
     print("U can't use this python file like main");

@@ -5,8 +5,11 @@ import csv
 import os
 from assistant_ai import AssistAI
 from config import ConfigTXT
+from language import LangINI
 from persons import PersonRPG
 
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear');
 def get_param(command:str):
     param = "";
     for i in command.split():
@@ -28,22 +31,28 @@ def play_audio(audio:str|None="audio.mp3"):
         pygame.mixer.music.play();
 
 pygame.mixer.init();
-
-config = ConfigTXT({"API-KEY":"str,none", "DIR-SOUNDPAD":"str,none", "VOICE-ID":"str,none"});
-assistant = AssistAI("Você será um assistente para RPGs");
+config = ConfigTXT({"API-KEY":"str,none", "DIR-SOUNDPAD":"str,none", "VOICE-ID":"str,none", "LANGUAGE":"str,none"});
+if config.get("LANGUAGE") == "none":
+    lang = LangINI();
+else:
+    lang = LangINI(config.get("LANGUAGE"));
+assistant = AssistAI(lang.ini.get("Prompt", "Assist"));
 while True:
-    os.system('cls' if os.name == 'nt' else 'clear');
-    _input = input("Lista de comandos:\n  assist [msg] - Pergunte para o assistente;\n  setperson [name_or_id] - Seleciona um personagem;\n  person [msg] - Imita o personagem selecionado;\n  textaudio [text] - Faz a voz de um npc;\n  d [num_of_dice] [num_dice] - Rola [num_of_dice] dados de [num_dice] dados;\n\nInput> ");
-    os.system('cls' if os.name == 'nt' else 'clear');
+    clear();
+    _input = input(lang.ini.get("Command", "List").format("\n", ";")+" ");
+    clear();
     match _input.split()[0]:
         case "assist":
-            print("Resposta:", assistant.response(get_param(_input)));
+            print(lang.ini.get("Command", "Response"), assistant.response(get_param(_input)));
         case "setperson":
-            person = PersonRPG(_input.split()[1]);
+            if config.get("LANGUAGE") == "none":
+                person = PersonRPG(_input.split()[1]);
+            else:
+                person = PersonRPG(_input.split()[1], config.get("LANGUAGE"));
             if config.get("API-KEY") == "none":
-                person_ai = AssistAI(f"Imite esse personagem de RPG: {person.list()}", False);
+                person_ai = AssistAI(f"{lang.ini.get("Prompt", "Person")} {person.list()}", False);
             if config.get("API-KEY") != "none":
-                person_ai = AssistAI(f"Imite esse personagem de RPG: {person.list()}", False, api_key=config.get("API-KEY"));
+                person_ai = AssistAI(f"{lang.ini.get("Prompt", "Person")} {person.list()}", False, api_key=config.get("API-KEY"));
             print(person.list());
         case "person":
             try:
@@ -51,17 +60,20 @@ while True:
                     print(f"{person.name}:", person_ai.response(get_param(_input)));
                 if config.get("API-KEY") != "none":
                     response = person_ai.response(get_param(_input));
-                    person_ai.text_to_speech(person.voice, response);
-                    person_ai.save_audio();
-                    play_audio();
+                    try:
+                        person_ai.text_to_speech(person.voice, response);
+                        person_ai.save_audio();
+                        play_audio();
+                    except:
+                        print(lang.ini.get("Error", "PersonVoice"));
                     print(f"{person.name}:", response);
             except:
-                print("Nenhum personagem selecionado!");
+                print(lang.ini.get("Error", "PersonNotSelect"));
         case "d":
             dice_roll = [];
             seed = rnd.randint(0,1000000);
             rnd.seed(seed);
-            print("Seed:", seed);
+            print(lang.ini.get("Dice", "Seed"), seed);
             for _ in range(int(_input.split()[1])):
                 dice_roll.append(rnd.randrange(1, int(_input.split()[2])+1));
             dice_print = "";
@@ -72,22 +84,25 @@ while True:
                 else:
                     dice_print += f"{i},";
                 dice_result += i;
-            dice_print += f"| [{dice_result}] foi o resultado!";
+            dice_print += f"| [{dice_result}] {lang.ini.get("Dice", "Result")}";
             save_dice(seed, dice_result);
             print(dice_print);
         case "textaudio":
             try:
+                speech = AssistAI(chat_save=False, api_key=config.get("API-KEY"));
                 try:
-                    person_ai.text_to_speech(person.voice, get_param(_input));
-                    person_ai.save_audio();
-                    play_audio();
+                    speech.text_to_speech(person.voice, get_param(_input));
                 except:
-                    speech = AssistAI(chat_save=False, api_key=config.get("API-KEY"));
                     speech.text_to_speech(config.get("VOICE-ID"), get_param(_input));
-                    speech.save_audio();
-                    play_audio();
+                speech.save_audio();
+                play_audio();
             except:
-                print("API-KEY not seted or VOICE-ID not seted!")
+                if config.get("API-KEY") == "none":
+                    print(lang.ini.get("Error", "NotDefined").format("API-KEY"));
+                elif config.get("VOICE-ID") == "none":
+                    print(lang.ini.get("Error", "NotDefined").format("VOICE-ID"));
+                else:
+                    print(lang.ini.get("Error", "NotValidTwo").format("API-KEY", "VOICE-ID"));
         case _:
-            print("Comando não existe");
+            print(lang.ini.get("Error", "ComNotExist"));
     input();
